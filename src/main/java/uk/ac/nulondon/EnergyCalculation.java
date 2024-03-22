@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
+/**
+ * Calculates energies for a given set of pixels
+ */
 public class EnergyCalculation {
     private double a, b, c, d, e, f, g, h, i;
 
