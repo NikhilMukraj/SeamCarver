@@ -2,46 +2,46 @@ package uk.ac.nulondon;
 
 import java.awt.*;
 
+/**
+ * @see Graph for implementation
+ * Acts as the nodes of the list of graphs used in the implementation of
+ * Graph.java
+ */
 public class Node {
     Color value;
     Node left;
     Node right;
     int brightness;
 
-    // constructor to create a new node
+    /**
+     * Default constructor for Node
+     */
     Node(){
         this.value = null;
         this.left = null;
         this.right = null;
     }
 
-    // constructor to create a new node
+    /**
+     * Constructor for Node
+     * @param value sets a color
+     */
     Node(Color value){
         this.value = value;
         this.left = null;
         this.right = null;
     }
 
-    // constructor that takes in sibling nodes as well
+    /**
+     * Constructor for Node
+     * @param value sets a color
+     * @param left sets its left node neighbor
+     * @param right sets its right node neighbor
+     */
     Node(Color value, Node left, Node right){
         this.value = value;
         this.left = left;
         this.right = right;
     }
 
-    /**
-     * Set the right child node
-     * @param node new node
-     */
-    public void setRight(Node node) {
-        this.right = node;
-    }
-
-    /**
-     * Set the left child node
-     * @param node new node
-     */
-    public void setLeft(Node node) {
-        this.left = node;
-    }
 }

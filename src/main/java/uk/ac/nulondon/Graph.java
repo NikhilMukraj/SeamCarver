@@ -4,12 +4,20 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.Buffer;
 
+/**
+ * Image representation and code for returning a node from the list of graphs
+ * Representation is a list of nodes that are linked with left and right neighbor
+ */
 public class Graph {
     private Node[] pixGraph;
     private BufferedImage image;
     private int rows;
     private int cols;
 
+    /**
+     * Constructor for the graph.
+     * @param imageInp is the BufferedImage inserted through the UI
+     */
     public Graph(BufferedImage imageInp) {
         pixGraph = new Node[imageInp.getHeight()];
         this.image = imageInp;
@@ -30,13 +38,22 @@ public class Graph {
         this.cols = image.getWidth();
     }
 
-    //returns the color value of the specified pixel
-    public Color getGraphIdx(int idxX, int idxY) {
-        Node iter = new Node();
-        for(int i = 0; i < idxY; i++) {
-            iter = pixGraph[idxX].right;
+    /**
+     * Returns the Node given a set of coordinates input by the user
+     * @param idxX represents the X value (column position) of the pixel
+     * @param idxY represents the Y value (row position) of the pixel
+     * @exception IndexOutOfBoundsException thrown if either index is out of
+     *                                      bounds
+     */
+    public Node getGraphIdx(int idxX, int idxY) {
+        if((idxX > cols || idxX < 0) || (idxY > rows || idxY < 0)) {
+            throw new IndexOutOfBoundsException("Error: Provided Index out of Bounds");
         }
-        return iter.value;
+        Node iter = new Node();
+        for(int i = 0; i < idxX; i++) {
+            iter = pixGraph[idxY].right;
+        }
+        return iter;
     }
 
 }
