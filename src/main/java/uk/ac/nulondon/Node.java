@@ -1,19 +1,29 @@
 package uk.ac.nulondon;
 
+import java.awt.*;
+
 public class Node {
-    int value;
+    Color value;
     Node left;
     Node right;
+    int brightness;
 
     // constructor to create a new node
-    Node(int value){
+    Node(){
+        this.value = null;
+        this.left = null;
+        this.right = null;
+    }
+
+    // constructor to create a new node
+    Node(Color value){
         this.value = value;
         this.left = null;
         this.right = null;
     }
 
     // constructor that takes in sibling nodes as well
-    Node(int value, Node left, Node right){
+    Node(Color value, Node left, Node right){
         this.value = value;
         this.left = left;
         this.right = right;
