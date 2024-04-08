@@ -11,7 +11,7 @@ public class Node {
     Color value;
     Node left;
     Node right;
-    int brightness;
+    double energy;
 
     /**
      * Default constructor for Node
