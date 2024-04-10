@@ -1,10 +1,15 @@
 package uk.ac.nulondon;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.Buffer;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Image representation and code for returning a node from the list of graphs
@@ -28,11 +33,9 @@ public class Graph {
             Node head = new Node(rgb);
             Node iter = head;
             for(int j = 0; j < imageInp.getWidth(); j++) {
-                if(i != 0 && j != 0) {
-                    rgb = new Color(image.getRGB(j, i));
-                    iter.right = new Node(rgb, iter, null);
-                    iter = iter.right;
-                }
+                rgb = new Color(image.getRGB(j, i));
+                iter.right = new Node(rgb, iter, null);
+                iter = iter.right;
             }
             pixGraph[i] = head;
         }
@@ -50,9 +53,9 @@ public class Graph {
      */
     public Node getGraphIdx(int idxX, int idxY) {
         try {
-            Node iter = new Node();
+            Node iter = pixGraph[idxY];
             for(int i = 0; i < idxX; i++) {
-                iter = pixGraph[idxY].right;
+                iter = iter.right;
             }
             return iter;
         } catch(IndexOutOfBoundsException e) {
@@ -77,10 +80,13 @@ public class Graph {
             Node iter = pixGraph[i];
             for(int j = 0; j < cols; j++) {
                 //clearing pixel matrix before every run
+                row1.clear();
+                row2.clear();
+                row3.clear();
                 pixelMatrix.clear();
 
                 //adding to the pixel matrix to calculate energy
-                //if the pixel is in the first row
+                //first row
                 if(i == 0) {
                     for(int n = 0; n < 3; n++) {
                         row1.add(iter.value);
@@ -107,7 +113,7 @@ public class Graph {
                 } else {
                     row2.add(getGraphIdx(j - 1, i).value);
                 }
-                row2.add(getGraphIdx(j, i).value);
+                row2.add(iter.value);
                 if(j == cols - 1) {
                     row2.add(iter.value);
                 } else {
@@ -134,10 +140,173 @@ public class Graph {
                         row3.add(getGraphIdx(j + 1, i + 1).value);
                     }
                 }
+                pixelMatrix.add(row1);
+                pixelMatrix.add(row2);
+                pixelMatrix.add(row3);
                 EnergyCalculation energyCalc = new EnergyCalculation(pixelMatrix);
                 iter.energy = energyCalc.Energy();
                 iter = iter.right;
             }
         }
+    }
+
+    /**
+     * Finds the seam with the least energy & returns the seam as a list of nodes
+     * @return an array of nodes representing the seam with the least energy
+     * @exception Exception is thrown if there is no image uploaded or no energy values assigned
+     */
+    public Node[] seamFinder() throws Exception{
+        if(pixGraph.length == 0) {
+            throw new Exception("No image uploaded");
+        } else if (pixGraph[0].energy == -1) {
+            throw new Exception("No energy values assigned");
+        }
+
+        ArrayList<Map.Entry<int[], Double>> energyCoords = new ArrayList<>();
+        Node iter = pixGraph[0];
+
+        //adding the preliminary format of energyCoords
+        for(int i = 0; i < cols; i++) {
+            int[] coordList = new int[rows];
+            coordList[0] = i;
+            Map.Entry<int[], Double> energyCoord = new AbstractMap.SimpleEntry<>(coordList, iter.energy);
+            energyCoords.add(energyCoord);
+            iter = iter.right;
+        }
+
+        /*
+        updating energyCoords for each row/column, taking note of the path
+        taken as a list of ints
+         */
+        for(int i = 1; i < rows; i++) {
+            Node iter1 = pixGraph[i-1];
+            Node iter2 = pixGraph[i];
+            for(int j = 0; j < cols; j++) {
+                //case if the node is at the left edge
+                if(iter1.left == null) {
+                    if(iter1.energy > iter1.right.energy) {
+                        energyCoords.get(j).getKey()[i] = j;
+                        energyCoords.get(j).setValue(iter1.energy + energyCoords.get(j).getValue());
+                    } else {
+                        energyCoords.get(j).getKey()[i] = j+1;
+                        energyCoords.get(j).setValue(iter1.right.energy + energyCoords.get(j).getValue());
+                    }
+                }
+                //case if the node is at the right edge
+                else if(iter1.right == null) {
+                    if(iter1.energy > iter1.left.energy) {
+                        energyCoords.get(j).getKey()[i] = j;
+                        energyCoords.get(j).setValue(iter1.energy + energyCoords.get(j).getValue());
+                    } else {
+                        energyCoords.get(j).getKey()[i] = j-1;
+                        energyCoords.get(j).setValue(iter1.left.energy + energyCoords.get(j).getValue());
+                    }
+                }
+                //otherwise, compare all three possible nodes above & save the value
+                else {
+                    if((iter1.energy > iter1.left.energy) && (iter1.energy > iter1.right.energy))  {
+                        energyCoords.get(j).getKey()[i] = j;
+                        energyCoords.get(j).setValue(iter1.energy + energyCoords.get(j).getValue());
+                    } else if((iter1.right.energy > iter1.energy) && (iter.right.energy > iter.left.energy)) {
+                        energyCoords.get(j).getKey()[i] = j + 1;
+                        energyCoords.get(j).setValue(iter1.right.energy + energyCoords.get(j).getValue());
+                    }
+                    else {
+                        energyCoords.get(j).getKey()[i] = j-1;
+                        energyCoords.get(j).setValue(iter1.left.energy + energyCoords.get(j).getValue());
+                    }
+                }
+            }
+            iter1 = iter1.right;
+            iter2 = iter2.right;
+        }
+
+        //finding the list with the smallest energy value
+        Double leastEnergy = energyCoords.getFirst().getValue();
+        int idx = 0;
+        for(int i = 1; i < energyCoords.size(); i++) {
+            if(energyCoords.get(i).getValue() < leastEnergy) {
+                leastEnergy = energyCoords.get(i).getValue();
+                idx = i;
+            }
+        }
+
+        //makes an ArrayList of Nodes based on the int[] with the least energy
+        int[] idxList = energyCoords.get(idx).getKey();
+        for(int i = 0; i < idxList.length; i++) {
+            System.out.print(idxList[i] + "," + i + " ");
+        }
+        System.out.println();
+        Node[] nodeList = new Node[idxList.length];
+        for(int i = 0; i < idxList.length; i++) {
+            nodeList[i] = getGraphIdx(idxList[i], i);
+        }
+        return nodeList;
+    }
+
+    /**
+     * Override method of toString to represent the graph function for testing
+     * & visualization
+     * @return a String format representation of graph
+     */
+    @Override
+    public String toString() {
+        if(pixGraph.length == 0) {
+            return "";
+        }
+        StringBuilder string = new StringBuilder();
+
+        for(int i = 0; i < rows; i++) {
+            Node iter = pixGraph[i];
+            for(int j = 0; j < cols; j++) {
+                if(iter != null) {
+                    string.append(iter.value.getRed() + "," + iter.value.getGreen() + "," + iter.value.getBlue());
+                    if(j != cols - 1) {
+                        string.append(" - ");
+                    }
+                    iter = iter.right;
+                }
+            }
+            string.append(System.lineSeparator());
+        }
+        return string.toString();
+    }
+
+    public String toStringEnergy() {
+        if(pixGraph.length == 0) {
+            return "";
+        }
+        StringBuilder string = new StringBuilder();
+
+        for(int i = 0; i < rows; i++) {
+            Node iter = pixGraph[i];
+            for(int j = 0; j < cols; j++) {
+                if(iter != null) {
+                    string.append(iter.energy);
+                    if(j != cols - 1) {
+                        string.append(" - ");
+                    }
+                    iter = iter.right;
+                }
+            }
+            string.append(System.lineSeparator());
+        }
+        return string.toString();
+    }
+
+    public static void main(String args[]) throws Exception {
+        File originalFile = new File("src/resources/beach.png");
+        BufferedImage tester = ImageIO.read(originalFile);
+
+        Graph pixgraph = new Graph(tester);
+        System.out.println(pixgraph);
+        pixgraph.setEnergyGrid();
+        System.out.println(pixgraph.toStringEnergy());
+
+        Node[] nodeList = pixgraph.seamFinder();
+        for(int i = 0; i < nodeList.length; i++) {
+            System.out.print(nodeList[i] + " - ");
+        }
+
     }
 }

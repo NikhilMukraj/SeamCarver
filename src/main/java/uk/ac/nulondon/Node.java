@@ -20,6 +20,7 @@ public class Node {
         this.value = null;
         this.left = null;
         this.right = null;
+        this.energy = -1;
     }
 
     /**
@@ -30,6 +31,7 @@ public class Node {
         this.value = value;
         this.left = null;
         this.right = null;
+        this.energy = -1;
     }
 
     /**
@@ -42,6 +44,13 @@ public class Node {
         this.value = value;
         this.left = left;
         this.right = right;
+        this.energy = -1;
+    }
+
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append(value.getRed()).append(",").append(value.getGreen()).append(",").append(value.getBlue());
+        return str.toString();
     }
 
 }
