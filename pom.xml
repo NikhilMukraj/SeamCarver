@@ -44,6 +44,14 @@
       <version>${approvaltests.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx</artifactId>
+      <version>23-ea+3</version>
+      <type>pom</type>
+    </dependency>
+
+
   </dependencies>
 
   <build>
