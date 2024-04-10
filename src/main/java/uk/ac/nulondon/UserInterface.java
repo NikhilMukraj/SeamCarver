@@ -1,2 +1,5 @@
-package uk.ac.nulondon;public class UserInterface {
+package uk.ac.nulondon;
+
+public class UserInterface {
+
 }
