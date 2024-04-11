@@ -28,11 +28,12 @@ public class Graph {
     public Graph(BufferedImage imageInp) {
         pixGraph = new Node[imageInp.getHeight()];
         this.image = imageInp;
-        Color rgb = new Color(image.getRGB(0, 0));
+        Color rgb;
         for(int i = 0; i < imageInp.getHeight(); i++) {
+            rgb = new Color(image.getRGB(0, i));
             Node head = new Node(rgb);
             Node iter = head;
-            for(int j = 0; j < imageInp.getWidth(); j++) {
+            for(int j = 1; j < imageInp.getWidth(); j++) {
                 rgb = new Color(image.getRGB(j, i));
                 iter.right = new Node(rgb, iter, null);
                 iter = iter.right;
@@ -41,6 +42,21 @@ public class Graph {
         }
         this.rows = image.getHeight();
         this.cols = image.getWidth();
+    }
+
+    public void imgUpdate() {
+        BufferedImage newImg = new BufferedImage(rows, cols, BufferedImage.TYPE_INT_RGB);
+        if(pixGraph.length == 0) {
+            return;
+        }
+        for(int i = 0; i < rows; i++) {
+            Node iter = pixGraph[i];
+            for(int j = 0; j < cols; j++) {
+                newImg.setRGB(j, i, iter.value.getRGB());
+                iter = iter.right;
+            }
+        }
+        image = newImg;
     }
 
     /**
@@ -151,6 +167,58 @@ public class Graph {
     }
 
     /**
+     * Helper function for seamfinder. will find the smallest value of
+     * the possible Doubles in the list of Map.Entry
+     * @param n represents the first node that we search through
+     * @return an array of Nodes representing the seam
+     */
+    private Node[] findLeastEnergy(Node n) {
+        Node smallestNode = n;
+        n = n.right;
+        for(int i = 1; i < cols; i++) {
+            if (n.energy < smallestNode.energy) {
+                smallestNode = n;
+            }
+            n = n.right;
+        }
+        Node[] nList = new Node[rows];
+        Node iter = smallestNode;
+        for(int i = nList.length-1; i > 0; i--) {
+            nList[i] = iter;
+            iter = iter.lastSeam;
+        }
+        nList[0] = iter;
+        return nList;
+    }
+
+    /**
+     * Helper function for bluefinder. will find the greatest value of
+     * the possible ints in the list of Map.Entry
+     * @param n represents the first node that we look through
+     * @return an array of Nodes representing the seam
+     */
+    private Node[] findGreatestBlue(Node n) {
+        Node greatest = n;
+        n = n.right;
+        for(int i = 1; i < cols; i++) {
+            if (n.blueAcc > greatest.blueAcc) {
+                greatest = n;
+            }
+            n = n.right;
+        }
+
+        Node[] nList = new Node[rows];
+        Node iter = greatest;
+        for(int i = nList.length-1; i > 0; i--) {
+            nList[i] = iter;
+            iter = iter.lastSeam;
+        }
+        nList[0] = iter;
+
+        return nList;
+    }
+
+    /**
      * Finds the seam with the least energy & returns the seam as a list of nodes
      * @return an array of nodes representing the seam with the least energy
      * @exception Exception is thrown if there is no image uploaded or no energy values assigned
@@ -162,17 +230,7 @@ public class Graph {
             throw new Exception("No energy values assigned");
         }
 
-        ArrayList<Map.Entry<int[], Double>> energyCoords = new ArrayList<>();
         Node iter = pixGraph[0];
-
-        //adding the preliminary format of energyCoords
-        for(int i = 0; i < cols; i++) {
-            int[] coordList = new int[rows];
-            coordList[0] = i;
-            Map.Entry<int[], Double> energyCoord = new AbstractMap.SimpleEntry<>(coordList, iter.energy);
-            energyCoords.add(energyCoord);
-            iter = iter.right;
-        }
 
         /*
         updating energyCoords for each row/column, taking note of the path
@@ -184,64 +242,112 @@ public class Graph {
             for(int j = 0; j < cols; j++) {
                 //case if the node is at the left edge
                 if(iter1.left == null) {
-                    if(iter1.energy > iter1.right.energy) {
-                        energyCoords.get(j).getKey()[i] = j;
-                        energyCoords.get(j).setValue(iter1.energy + energyCoords.get(j).getValue());
+                    if(iter1.energy < iter1.right.energy) {
+                        iter2.energy = iter1.energy + iter2.energy;
+                        iter2.lastSeam = iter1;
                     } else {
-                        energyCoords.get(j).getKey()[i] = j+1;
-                        energyCoords.get(j).setValue(iter1.right.energy + energyCoords.get(j).getValue());
+                        iter2.energy = iter1.right.energy + iter2.energy;
+                        iter2.lastSeam = iter1.right;
                     }
                 }
                 //case if the node is at the right edge
                 else if(iter1.right == null) {
-                    if(iter1.energy > iter1.left.energy) {
-                        energyCoords.get(j).getKey()[i] = j;
-                        energyCoords.get(j).setValue(iter1.energy + energyCoords.get(j).getValue());
+                    if(iter1.energy < iter1.left.energy) {
+                        iter2.energy = iter1.energy + iter2.energy;
+                        iter2.lastSeam = iter1;
                     } else {
-                        energyCoords.get(j).getKey()[i] = j-1;
-                        energyCoords.get(j).setValue(iter1.left.energy + energyCoords.get(j).getValue());
+                        iter2.energy = iter1.left.energy + iter2.energy;
+                        iter2.lastSeam = iter1.left;
                     }
                 }
                 //otherwise, compare all three possible nodes above & save the value
                 else {
-                    if((iter1.energy > iter1.left.energy) && (iter1.energy > iter1.right.energy))  {
-                        energyCoords.get(j).getKey()[i] = j;
-                        energyCoords.get(j).setValue(iter1.energy + energyCoords.get(j).getValue());
-                    } else if((iter1.right.energy > iter1.energy) && (iter.right.energy > iter.left.energy)) {
-                        energyCoords.get(j).getKey()[i] = j + 1;
-                        energyCoords.get(j).setValue(iter1.right.energy + energyCoords.get(j).getValue());
+                    if((iter1.energy < iter1.left.energy) && (iter1.energy < iter1.right.energy))  {
+                        iter2.energy = iter1.energy + iter2.energy;
+                        iter2.lastSeam = iter1;
+                    } else if((iter1.right.energy < iter1.energy) && (iter1.right.energy < iter1.left.energy)) {
+                        iter2.energy = iter1.right.energy + iter2.energy;
+                        iter2.lastSeam = iter1.right;
                     }
                     else {
-                        energyCoords.get(j).getKey()[i] = j-1;
-                        energyCoords.get(j).setValue(iter1.left.energy + energyCoords.get(j).getValue());
+                        iter2.energy = iter1.left.energy + iter2.energy;
+                        iter2.lastSeam = iter1.left;
                     }
                 }
-            }
-            iter1 = iter1.right;
-            iter2 = iter2.right;
-        }
-
-        //finding the list with the smallest energy value
-        Double leastEnergy = energyCoords.getFirst().getValue();
-        int idx = 0;
-        for(int i = 1; i < energyCoords.size(); i++) {
-            if(energyCoords.get(i).getValue() < leastEnergy) {
-                leastEnergy = energyCoords.get(i).getValue();
-                idx = i;
+                iter1 = iter1.right;
+                iter2 = iter2.right;
             }
         }
 
         //makes an ArrayList of Nodes based on the int[] with the least energy
-        int[] idxList = energyCoords.get(idx).getKey();
-        for(int i = 0; i < idxList.length; i++) {
-            System.out.print(idxList[i] + "," + i + " ");
+        return findLeastEnergy(pixGraph[rows - 1]);
+    }
+
+    /**
+     * Finds the seam with the mast blue values and returns it as a list of nodes
+     * @return an array of nodes representing the seam with the highest blue value
+     * @exception Exception is thrown if there is no image uploaded
+     */
+    public Node[] blueFinder() throws Exception{
+        //case if the graph is empty
+        if(pixGraph.length == 0) {
+            throw new Exception("No image uploaded");
         }
-        System.out.println();
-        Node[] nodeList = new Node[idxList.length];
-        for(int i = 0; i < idxList.length; i++) {
-            nodeList[i] = getGraphIdx(idxList[i], i);
+
+        //adding to the list as we search through the entire graph
+        for(int i = 1; i < rows; i++) {
+            Node iter1 = pixGraph[i - 1];
+            Node iter2 = pixGraph[i];
+            for(int j = 0; j < cols; j++) {
+                //case if the node is at the left edge
+                if(iter1.left == null) {
+                    if(iter1.blueAcc > iter1.right.blueAcc) {
+                        iter2.blueAcc = iter2.blueAcc + iter1.blueAcc;
+                        iter2.lastSeam = iter1;
+                    } else {
+                        iter2.blueAcc = iter2.blueAcc + iter1.right.blueAcc;
+                        iter2.lastSeam = iter1.right;
+                    }
+                }
+                //case if the node is at the right edge
+                else if(iter1.right == null) {
+                    if(iter1.blueAcc > iter1.left.blueAcc) {
+                        iter2.blueAcc = iter2.blueAcc + iter1.blueAcc;
+                        iter2.lastSeam = iter1;
+                    } else {
+                        iter2.blueAcc = iter2.blueAcc + iter1.left.blueAcc;
+                        iter2.lastSeam = iter1.left;
+                    }
+                }
+                //otherwise, compare all three possible nodes above & save the value
+                else {
+                    if((iter1.blueAcc >= iter1.left.blueAcc)
+                            && (iter1.value.getBlue() >= iter1.right.value.getBlue()))  {
+                        iter2.blueAcc = iter2.blueAcc + iter1.blueAcc;
+                        iter2.lastSeam = iter1;
+                    } else if((iter1.right.blueAcc > iter1.blueAcc)
+                            && (iter1.right.blueAcc > iter1.left.blueAcc)) {
+                        iter2.blueAcc = iter2.blueAcc + iter1.right.blueAcc;
+                        iter2.lastSeam = iter1.right;
+                    }
+                    else {
+                        iter2.blueAcc = iter2.blueAcc + iter1.left.blueAcc;
+                        iter2.lastSeam = iter1.left;
+                    }
+                }
+                iter1 = iter1.right;
+                iter2 = iter2.right;
+            }
         }
-        return nodeList;
+
+        //get the node list & return
+        return findGreatestBlue(pixGraph[rows - 1]);
+    }
+
+    public void highlightNodes(Node[] nodey, Color c) {
+        for(int i = 0; i < nodey.length; i++) {
+            nodey[i].value = c;
+        }
     }
 
     /**
@@ -272,6 +378,11 @@ public class Graph {
         return string.toString();
     }
 
+    /**
+     * toString representation of the graph function for testing but
+     * with energy values instead
+     * @return a String format representation of graph
+     */
     public String toStringEnergy() {
         if(pixGraph.length == 0) {
             return "";
@@ -294,19 +405,27 @@ public class Graph {
         return string.toString();
     }
 
+    public void saveImg(BufferedImage img, File f) throws IllegalAccessException {
+        try{
+            ImageIO.write(img, "png", f);
+            System.out.println(f + " has been successfully saved!");
+        } catch (Exception e) {
+            throw new IllegalAccessException("Path doesn't exist");
+        }
+    }
+
     public static void main(String args[]) throws Exception {
         File originalFile = new File("src/resources/beach.png");
         BufferedImage tester = ImageIO.read(originalFile);
+        File seamTest = new File("src/resources/seamTemp.png");
+        File blueTest = new File("src/resources/blueTemp.png");
 
         Graph pixgraph = new Graph(tester);
-        System.out.println(pixgraph);
         pixgraph.setEnergyGrid();
-        System.out.println(pixgraph.toStringEnergy());
-
-        Node[] nodeList = pixgraph.seamFinder();
-        for(int i = 0; i < nodeList.length; i++) {
-            System.out.print(nodeList[i] + " - ");
-        }
-
+        System.out.println(pixgraph);
+        Node[] blueList = pixgraph.blueFinder();
+        pixgraph.highlightNodes(blueList, Color.blue);
+        pixgraph.imgUpdate();
+        pixgraph.saveImg(pixgraph.image, blueTest);
     }
 }

@@ -9,8 +9,10 @@ import java.awt.*;
  */
 public class Node {
     Color value;
+    int blueAcc;
     Node left;
     Node right;
+    Node lastSeam;
     double energy;
 
     /**
@@ -32,6 +34,7 @@ public class Node {
         this.left = null;
         this.right = null;
         this.energy = -1;
+        this.blueAcc = value.getBlue();
     }
 
     /**
@@ -45,6 +48,7 @@ public class Node {
         this.left = left;
         this.right = right;
         this.energy = -1;
+        this.blueAcc = value.getBlue();
     }
 
     public String toString() {
