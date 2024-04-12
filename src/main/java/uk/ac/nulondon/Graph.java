@@ -361,10 +361,10 @@ public class Graph {
      * Given a list of nodes, removes those nodes and resizes the graph
      * by updating the rows value and cols value in pixGraph. then updates
      * the BufferedImage image after this process
-     * @param nodes the list of nodes we will be highlighting
+     * @param nodes the list of nodes we will be deleting
      * @return a boolean if the resizing & deletion was successfully completed
      */
-    public boolean deleteAndResize(Node[] nodes) {
+    public boolean delete(Node[] nodes) {
         for(int i = 0; i < nodes.length; i++) {
             if(nodes[i].right == null && nodes[i].left == null) {
                 return false;
@@ -383,6 +383,36 @@ public class Graph {
         }
         rows--;
         cols--;
+        imgUpdate();
+        return true;
+    }
+
+    /**
+     * Given a list of nodes, adds those nodes and resizes the graph
+     * by updating the rows value and cols value in pixGraph. then updates
+     * the BufferedImage image after this process
+     * @param nodes the list of nodes we will be adding
+     * @return a boolean if the resizing & addition was successfully completed
+     */
+    public boolean add(Node[] nodes) {
+        for(int i = 0; i < nodes.length; i++) {
+            if(nodes[i].right == null && nodes[i].left == null) {
+                return false;
+            }
+            if(nodes[i].left == null) {
+                nodes[i].right.left = nodes[i];
+            }
+            if(nodes[i].right == null) {
+                nodes[i].left.right = nodes[i];
+            }
+            if(nodes[i].right != null && nodes[i].left != null) {
+                nodes[i].right.left = nodes[i];
+                nodes[i].left.right = nodes[i];
+            }
+
+        }
+        rows++;
+        cols++;
         imgUpdate();
         return true;
     }
@@ -467,6 +497,6 @@ public class Graph {
         Node[] blueList = pixgraph.blueFinder();
         pixgraph.highlightNodes(blueList, Color.blue);
         pixgraph.imgUpdate();
-        pixgraph.saveImg(pixgraph.image, blueTest);
+        pixgraph.saveImg(blueTest);
     }
 }
