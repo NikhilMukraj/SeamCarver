@@ -344,10 +344,47 @@ public class Graph {
         return findGreatestBlue(pixGraph[rows - 1]);
     }
 
-    public void highlightNodes(Node[] nodey, Color c) {
-        for(int i = 0; i < nodey.length; i++) {
-            nodey[i].value = c;
+    /**
+     * Highlights a set of nodes on pixGraph with a given color c
+     * then calls imgUpdate to update the BufferedImage image value
+     * @param c the color that the nodes will be highlighted
+     * @param nodes the list of nodes we will be highlighting
+     */
+    public void highlightNodes(Node[] nodes, Color c) {
+        for(int i = 0; i < nodes.length; i++) {
+            nodes[i].value = c;
         }
+        imgUpdate();
+    }
+
+    /**
+     * Given a list of nodes, removes those nodes and resizes the graph
+     * by updating the rows value and cols value in pixGraph. then updates
+     * the BufferedImage image after this process
+     * @param nodes the list of nodes we will be highlighting
+     * @return a boolean if the resizing & deletion was successfully completed
+     */
+    public boolean deleteAndResize(Node[] nodes) {
+        for(int i = 0; i < nodes.length; i++) {
+            if(nodes[i].right == null && nodes[i].left == null) {
+                return false;
+            }
+            if(nodes[i].left == null) {
+                nodes[i].right.left = null;
+            }
+            if(nodes[i].right == null) {
+                nodes[i].left.right = null;
+            }
+            if(nodes[i].right != null && nodes[i].left != null) {
+                nodes[i].right.left = nodes[i].left;
+                nodes[i].left.right = nodes[i].right;
+            }
+
+        }
+        rows--;
+        cols--;
+        imgUpdate();
+        return true;
     }
 
     /**
@@ -405,9 +442,13 @@ public class Graph {
         return string.toString();
     }
 
-    public void saveImg(BufferedImage img, File f) throws IllegalAccessException {
+    /**
+     * Will write the current image to a specified file upon prompting
+     * @param f the file/filepath specified
+     */
+    public void saveImg(File f) throws IllegalAccessException {
         try{
-            ImageIO.write(img, "png", f);
+            ImageIO.write(image, "png", f);
             System.out.println(f + " has been successfully saved!");
         } catch (Exception e) {
             throw new IllegalAccessException("Path doesn't exist");
