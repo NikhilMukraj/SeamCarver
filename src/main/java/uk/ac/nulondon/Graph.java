@@ -396,6 +396,7 @@ public class Graph {
      */
     public boolean add(Node[] nodes) {
         for(int i = 0; i < nodes.length; i++) {
+            nodes[i].value = nodes[i].ogValue;
             if(nodes[i].right == null && nodes[i].left == null) {
                 return false;
             }
