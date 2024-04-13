@@ -45,13 +45,16 @@ public class Graph {
     }
 
     public void imgUpdate() {
-        BufferedImage newImg = new BufferedImage(rows, cols, BufferedImage.TYPE_INT_RGB);
+        BufferedImage newImg = new BufferedImage(cols, rows, BufferedImage.TYPE_INT_RGB);
         if(pixGraph.length == 0) {
             return;
         }
         for(int i = 0; i < rows; i++) {
             Node iter = pixGraph[i];
             for(int j = 0; j < cols; j++) {
+                while(iter.skip) {
+                    iter = iter.right;
+                }
                 newImg.setRGB(j, i, iter.value.getRGB());
                 iter = iter.right;
             }
@@ -161,6 +164,7 @@ public class Graph {
                 pixelMatrix.add(row3);
                 EnergyCalculation energyCalc = new EnergyCalculation(pixelMatrix);
                 iter.energy = energyCalc.Energy();
+                iter.blueAcc = iter.value.getBlue();
                 iter = iter.right;
             }
         }
@@ -365,23 +369,24 @@ public class Graph {
      * @return a boolean if the resizing & deletion was successfully completed
      */
     public boolean delete(Node[] nodes) {
-        for(int i = 0; i < nodes.length; i++) {
-            if(nodes[i].right == null && nodes[i].left == null) {
+        for (Node node : nodes) {
+            if (node.right == null && node.left == null) {
                 return false;
             }
-            if(nodes[i].left == null) {
-                nodes[i].right.left = null;
+            if (node.left == null) {
+                node.right.left = null;
+                node.skip = true;
             }
-            if(nodes[i].right == null) {
-                nodes[i].left.right = null;
+            if (node.right == null) {
+                node.left.right = null;
+                node.skip = true;
             }
-            if(nodes[i].right != null && nodes[i].left != null) {
-                nodes[i].right.left = nodes[i].left;
-                nodes[i].left.right = nodes[i].right;
+            if (node.right != null && node.left != null) {
+                node.right.left = node.left;
+                node.left.right = node.right;
             }
 
         }
-        rows--;
         cols--;
         imgUpdate();
         return true;
@@ -395,24 +400,26 @@ public class Graph {
      * @return a boolean if the resizing & addition was successfully completed
      */
     public boolean add(Node[] nodes) {
-        for(int i = 0; i < nodes.length; i++) {
-            nodes[i].value = nodes[i].ogValue;
-            if(nodes[i].right == null && nodes[i].left == null) {
+        for (Node node : nodes) {
+            node.value = node.ogValue;
+            if (node.right == null && node.left == null) {
                 return false;
             }
-            if(nodes[i].left == null) {
-                nodes[i].right.left = nodes[i];
+            if (node.left == null) {
+                node.right.left = node;
+                node.skip = false;
             }
-            if(nodes[i].right == null) {
-                nodes[i].left.right = nodes[i];
+            if (node.right == null) {
+                node.left.right = node;
+                node.skip = false;
             }
-            if(nodes[i].right != null && nodes[i].left != null) {
-                nodes[i].right.left = nodes[i];
-                nodes[i].left.right = nodes[i];
+            if (node.right != null && node.left != null) {
+                node.right.left = node;
+                node.left.right = node;
+                node.skip = false;
             }
 
         }
-        rows++;
         cols++;
         imgUpdate();
         return true;

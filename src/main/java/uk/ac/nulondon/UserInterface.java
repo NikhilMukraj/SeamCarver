@@ -2,7 +2,6 @@ package uk.ac.nulondon;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.InputMismatchException;
@@ -13,7 +12,7 @@ public class UserInterface {
     //used for image representation
     private static Graph graph;
     //used to keep track of edits
-    private static Stack<Node[]> edits = new Stack<Node[]>();
+    private static Stack<Node[]> edits = new Stack<>();
     //for tempImg, edit tracking
     private static int editCount = 0;
     private static int imgLoadCount = 0;
@@ -27,9 +26,10 @@ public class UserInterface {
      */
     public static boolean fileCheck(String filename) throws IOException {
         try {
-            File f = new File(filename);
+            File f = new File("src/resources/"+filename);
             if(f.isFile()) {
                 graph = new Graph(ImageIO.read(f));
+                graph.setEnergyGrid();
                 System.out.println("Image from " + filename + " was loaded!");
                 return true;
             } else {
@@ -48,8 +48,8 @@ public class UserInterface {
     public static void printMenu() {
         System.out.println("What would you like to do?");
         System.out.println("f.) Choose a new file");
-        System.out.println("b.) Delete the bluest seam");
-        System.out.println("e.) Delete the seam with the least energy");
+        System.out.println("b.) Highlight the bluest seam");
+        System.out.println("e.) Highlight the seam with the least energy");
         System.out.println("d.) Confirm deletion IF a seam is highlighted");
         System.out.println("u.) Undo last edit");
         System.out.println("q.) Quit");
@@ -62,12 +62,12 @@ public class UserInterface {
     public static void reactResponse(String selection) {
         //a file for saveImg in Image.java, tempImg
         File f = new File(
-                "src/main/resources/tempImg" +
+                "src/resources/tempImg" +
                         imgLoadCount+ "_0" +
                         editCount + ".png");
         //refers to a final image file, created upon quitting
         File fFinal = new File(
-                "src/main/resources/finalImg" +
+                "src/resources/finalImg" +
                         imgLoadCount+ "_0" +
                         editCount + ".png");
         //a switch that uses the user input
@@ -138,6 +138,14 @@ public class UserInterface {
                 if(highlightedBoard) {
                     System.out.println("Removing highlighted portion...");
                     graph.delete(highlighted);
+                    graph.setEnergyGrid();
+
+                    try {
+                        graph.saveImg(f);
+                    } catch(Exception e) {
+                        System.out.println("File path not found");
+                    }
+
                     highlightedBoard = false;
                     editCount++;
                     System.out.println("New image:");
@@ -158,6 +166,15 @@ public class UserInterface {
                     System.out.println("Undoing the last change.");
                     Node[] lastEdit = edits.pop();
                     graph.add(lastEdit);
+
+                    try {
+                        graph.saveImg(f);
+                    } catch(Exception e) {
+                        System.out.println("File path not found");
+                    }
+                    editCount++;
+                    System.out.println("New image:");
+                    System.out.println(graph);
                 }
                 break;
             case "q":
@@ -198,7 +215,7 @@ public class UserInterface {
         prompts the user to enter a file. won't exit until it is a valid png.
          */
         while(!fileSwitch) {
-            System.out.println("Please enter a path to your file:");
+            System.out.println("Please enter the name of a png within src/resources:");
             try {
                 fileSwitch = fileCheck(scan.nextLine());
             } catch (IOException e) {
@@ -229,7 +246,7 @@ public class UserInterface {
             if(choice.equals("f")) {
                 fileSwitch = false;
                 while(!fileSwitch) {
-                    System.out.println("Please enter a path to the image you want to switch to:");
+                    System.out.println("Please enter the name of a png within src/resources:");
                     try {
                         fileSwitch = fileCheck(scan.nextLine());
                         imgLoadCount++;
@@ -246,5 +263,4 @@ public class UserInterface {
         }
         scan.close();
     }
-}
 }

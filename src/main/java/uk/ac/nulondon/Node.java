@@ -15,6 +15,7 @@ public class Node {
     Node right;
     Node lastSeam;
     double energy;
+    boolean skip = false;
 
     /**
      * Default constructor for Node
