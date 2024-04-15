@@ -499,13 +499,4 @@ public class Graph {
             throw new IllegalAccessException("Path doesn't exist");
         }
     }
-
-    public static void main(String args[]) throws Exception {
-        File originalFile = new File("src/resources/beach.png");
-        BufferedImage tester = ImageIO.read(originalFile);
-
-        Graph pixgraph = new Graph(tester);
-        pixgraph.setEnergyGrid();
-        System.out.println(pixgraph.toStringEnergy());
-    }
 }

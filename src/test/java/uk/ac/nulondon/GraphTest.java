@@ -287,7 +287,7 @@ public class GraphTest{
     }
 
     @Test
-    public void testAdd() {
+    public void testAdd() throws Exception {
         testGraph1.setEnergyGrid();
         testGraph2.setEnergyGrid();
         testGraph3.setEnergyGrid();
