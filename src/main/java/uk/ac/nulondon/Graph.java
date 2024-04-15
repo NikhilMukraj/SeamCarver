@@ -44,7 +44,11 @@ public class Graph {
         this.cols = image.getWidth();
     }
 
-    public void imgUpdate() {
+    /**
+     * Updates the BufferedImage image parameter after editing it.
+     * Helper function for add, delete, and highlight. Pulls info from pixGraph
+     */
+    private void imgUpdate() {
         BufferedImage newImg = new BufferedImage(cols, rows, BufferedImage.TYPE_INT_RGB);
         if(pixGraph.length == 0) {
             return;
@@ -441,6 +445,9 @@ public class Graph {
             Node iter = pixGraph[i];
             for(int j = 0; j < cols; j++) {
                 if(iter != null) {
+                    while(iter.skip) {
+                        iter = iter.right;
+                    }
                     string.append(iter.value.getRed() + "," + iter.value.getGreen() + "," + iter.value.getBlue());
                     if(j != cols - 1) {
                         string.append(" - ");
@@ -496,15 +503,9 @@ public class Graph {
     public static void main(String args[]) throws Exception {
         File originalFile = new File("src/resources/beach.png");
         BufferedImage tester = ImageIO.read(originalFile);
-        File seamTest = new File("src/resources/seamTemp.png");
-        File blueTest = new File("src/resources/blueTemp.png");
 
         Graph pixgraph = new Graph(tester);
         pixgraph.setEnergyGrid();
-        System.out.println(pixgraph);
-        Node[] blueList = pixgraph.blueFinder();
-        pixgraph.highlightNodes(blueList, Color.blue);
-        pixgraph.imgUpdate();
-        pixgraph.saveImg(blueTest);
+        System.out.println(pixgraph.toStringEnergy());
     }
 }

@@ -8,6 +8,11 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.Stack;
 
+/**
+ * Space for user interaction---where the main functions are run from
+ * Contains print statements and cases for user responses
+ * @see Graph for backend
+ */
 public class UserInterface {
     //used for image representation
     private static Graph graph;
@@ -57,6 +62,7 @@ public class UserInterface {
 
     /**
      * Print a response to the user, given their selection of mutations
+     * Also takes an action based on user input
      * @param selection the value of the user's choice
      */
     public static void reactResponse(String selection) {
@@ -200,14 +206,13 @@ public class UserInterface {
     }
 
     public static void main(String[] args) throws IOException {
+
         /*
          a list of boolean switches for various loops within the user
          interface.
          */
         boolean fileSwitch = false;
         boolean shouldQuit = false;
-        boolean confMade = false;
-        boolean sketchSwitch = true;
 
         Scanner scan = new Scanner(System.in);
 

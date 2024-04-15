@@ -18,17 +18,6 @@ public class Node {
     boolean skip = false;
 
     /**
-     * Default constructor for Node
-     */
-    Node(){
-        this.value = null;
-        this.ogValue = null;
-        this.left = null;
-        this.right = null;
-        this.energy = -1;
-    }
-
-    /**
      * Constructor for Node
      * @param value sets a color
      */
@@ -55,11 +44,4 @@ public class Node {
         this.energy = -1;
         this.blueAcc = value.getBlue();
     }
-
-    public String toString() {
-        StringBuilder str = new StringBuilder();
-        str.append(value.getRed()).append(",").append(value.getGreen()).append(",").append(value.getBlue());
-        return str.toString();
-    }
-
 }
