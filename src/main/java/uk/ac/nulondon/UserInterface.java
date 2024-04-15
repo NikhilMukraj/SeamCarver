@@ -261,6 +261,25 @@ public class UserInterface {
                 }
             }
 
+//            //loop case for a confirmation to undo or delete bluest/random
+//            else if(choice.equals("r") || choice.equals("b") ||
+//                    (choice.equals("u") && edits.)) {
+//                while(!confMade) {
+//                    printConfirm();
+//                    String confChoice = "";
+//
+//                    try {
+//                        confChoice = scan.nextLine();
+//                    } catch (InputMismatchException e) {
+//                        System.out.println("No input given");
+//                        choice = "c";
+//                    }
+//
+//                    confMade = confResult(choice, confChoice);
+//                }
+//                confMade = false;
+//            }
+
             // if choice is quit, exit the while-loop
             else if(choice.equals("q")) {
                 shouldQuit = true;

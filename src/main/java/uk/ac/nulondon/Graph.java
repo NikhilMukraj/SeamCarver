@@ -250,7 +250,7 @@ public class Graph {
             for(int j = 0; j < cols; j++) {
                 //case if the node is at the left edge
                 if(iter1.left == null) {
-                    if(iter1.energy < iter1.right.energy) {
+                    if(iter1.energy <= iter1.right.energy) {
                         iter2.energy = iter1.energy + iter2.energy;
                         iter2.lastSeam = iter1;
                     } else {
@@ -309,12 +309,12 @@ public class Graph {
             for(int j = 0; j < cols; j++) {
                 //case if the node is at the left edge
                 if(iter1.left == null) {
-                    if(iter1.blueAcc > iter1.right.blueAcc) {
-                        iter2.blueAcc = iter2.blueAcc + iter1.blueAcc;
-                        iter2.lastSeam = iter1;
-                    } else {
+                    if(iter1.blueAcc < iter1.right.blueAcc) {
                         iter2.blueAcc = iter2.blueAcc + iter1.right.blueAcc;
                         iter2.lastSeam = iter1.right;
+                    } else {
+                        iter2.blueAcc = iter2.blueAcc + iter1.blueAcc;
+                        iter2.lastSeam = iter1;
                     }
                 }
                 //case if the node is at the right edge
@@ -329,7 +329,7 @@ public class Graph {
                 }
                 //otherwise, compare all three possible nodes above & save the value
                 else {
-                    if((iter1.blueAcc >= iter1.left.blueAcc)
+                    if((iter1.blueAcc > iter1.left.blueAcc)
                             && (iter1.value.getBlue() >= iter1.right.value.getBlue()))  {
                         iter2.blueAcc = iter2.blueAcc + iter1.blueAcc;
                         iter2.lastSeam = iter1;
@@ -429,6 +429,12 @@ public class Graph {
         return true;
     }
 
+    public void returnColor(Node[] nodes) {
+        for (int i = 0; i < nodes.length; i++) {
+            nodes[i].value = nodes[i].ogValue;
+        }
+    }
+
     /**
      * Override method of toString to represent the graph function for testing
      * & visualization
@@ -475,7 +481,7 @@ public class Graph {
             Node iter = pixGraph[i];
             for(int j = 0; j < cols; j++) {
                 if(iter != null) {
-                    string.append(iter.energy);
+                    string.append(iter.blueAcc);
                     if(j != cols - 1) {
                         string.append(" - ");
                     }
@@ -498,5 +504,15 @@ public class Graph {
         } catch (Exception e) {
             throw new IllegalAccessException("Path doesn't exist");
         }
+    }
+
+    public static void main(String args[]) throws Exception {
+        File f = new File("src/resources/beach.png");
+        Graph graph = new Graph(ImageIO.read(f));
+
+        graph.setEnergyGrid();
+        graph.blueFinder();
+
+        System.out.println(graph.toStringEnergy());
     }
 }
