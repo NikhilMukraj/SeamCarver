@@ -28,7 +28,7 @@ public class UserInterface {
     private static boolean highlightedBoard = false;
 
     //color println features
-    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_NO_COLOR = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_BLUE = "\u001B[34m";
     public static final String ANSI_PURPLE = "\u001B[35m";
@@ -288,7 +288,7 @@ public class UserInterface {
 
             if(highlightedBoard) {
                 System.out.println(ANSI_CYAN + "There is currently a highlighted portion on the board. " +
-                        "Enter d to delete" + System.lineSeparator() + "or any other key to cancel" + ANSI_RESET);
+                        "Enter d to delete" + System.lineSeparator() + "or any other key to cancel" + ANSI_NO_COLOR);
             }
 
             // try and get user input, if input is ever invalid this will set choice to quit
@@ -318,25 +318,6 @@ public class UserInterface {
                         }
                     }
                 }
-
-//            //loop case for a confirmation to undo or delete bluest/random
-//            else if(choice.equals("r") || choice.equals("b") ||
-//                    (choice.equals("u") && edits.)) {
-//                while(!confMade) {
-//                    printConfirm();
-//                    String confChoice = "";
-//
-//                    try {
-//                        confChoice = scan.nextLine();
-//                    } catch (InputMismatchException e) {
-//                        System.out.println("No input given");
-//                        choice = "c";
-//                    }
-//
-//                    confMade = confResult(choice, confChoice);
-//                }
-//                confMade = false;
-//            }
 
                 // if choice is quit, exit the while-loop
                 else if(choice.equals("q")) {

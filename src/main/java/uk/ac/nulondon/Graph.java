@@ -29,7 +29,7 @@ public class Graph {
     private int cols;
 
     //color println features
-    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_NO_COLOR = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_BLUE = "\u001B[34m";
     public static final String ANSI_PURPLE = "\u001B[35m";
@@ -504,7 +504,7 @@ public class Graph {
             Node iter = pixGraph[i];
             for(int j = 0; j < cols; j++) {
                 if(iter != null) {
-                    string.append(iter.blueAcc);
+                    string.append(iter.energy);
                     if(j != cols - 1) {
                         string.append(" - ");
                     }
@@ -523,19 +523,9 @@ public class Graph {
     public void saveImg(File f) throws IllegalAccessException {
         try{
             ImageIO.write(image, "png", f);
-            System.out.println(ANSI_CYAN + f + " has been successfully saved!" + ANSI_RESET);
+            System.out.println(ANSI_CYAN + f + " has been successfully saved!" + ANSI_NO_COLOR);
         } catch (Exception e) {
             throw new IllegalAccessException("Path doesn't exist");
         }
     }
-
-//    public static void main(String args[]) throws Exception {
-//        File f = new File("src/resources/beach.png");
-//        Graph graph = new Graph(ImageIO.read(f));
-//
-//        graph.setEnergyGrid();
-//        Node[] bluest = graph.blueFinder();
-//        graph.highlightNodes(bluest, Color.blue);
-//
-//    }
 }
