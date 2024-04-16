@@ -1,7 +1,6 @@
 package uk.ac.nulondon;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,14 +27,14 @@ public class UserInterface {
     private static Node[] highlighted = new Node[0];
     private static boolean highlightedBoard = false;
 
-    private static GUIJFrame gui;
-
     //color println features
     public static final String ANSI_NO_COLOR = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_BLUE = "\u001B[34m";
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
+
+    public static GUIJFrame gui;
 
     /**
      * Checks if the filePath provided by the user exists
@@ -325,6 +324,7 @@ public class UserInterface {
             // if choice is quit, exit the while-loop
             if(choice.equals("q")) {
                 shouldQuit = true;
+                System.out.println("ensure that all display windows are closed...");
                 gui.kill();
             }
         }

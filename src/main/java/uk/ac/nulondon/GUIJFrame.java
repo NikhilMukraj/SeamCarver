@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 
 public class GUIJFrame {
     JFrame frame;
+
     public GUIJFrame(String title, ImageIcon img) {
         initialize(title, img);
     }
