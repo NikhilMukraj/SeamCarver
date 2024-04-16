@@ -2,8 +2,10 @@ package uk.ac.nulondon;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.Stack;
@@ -24,6 +26,13 @@ public class UserInterface {
     //for keeping track of whether a highlight is on the board or not
     private static Node[] highlighted = new Node[0];
     private static boolean highlightedBoard = false;
+
+    //color println features
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
 
     /**
      * Checks if the filePath provided by the user exists
@@ -53,6 +62,7 @@ public class UserInterface {
     public static void printMenu() {
         System.out.println("What would you like to do?");
         System.out.println("f.) Choose a new file");
+        System.out.println("v.) View current image");
         System.out.println("b.) Highlight the bluest seam");
         System.out.println("e.) Highlight the seam with the least energy");
         System.out.println("d.) Confirm deletion IF a seam is highlighted");
@@ -78,6 +88,14 @@ public class UserInterface {
                         editCount + ".png");
         //a switch that uses the user input
         switch(selection) {
+            case "v":
+                System.out.println("Viewing current image...");
+                try {
+                    GUIJFrame gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+                } catch(IOException ioException) {
+                    System.out.println("Error: IO Exception");
+                }
+            break;
             case "b":
                 /*
                 will use the highlight blue function from Graph.java
@@ -99,8 +117,12 @@ public class UserInterface {
                     } catch(Exception e) {
                         System.out.println("File path not found");
                     }
-                    System.out.println("Changed Image:");
-                    System.out.println(graph);
+                    System.out.println("Now showing you the changed image...");
+                    try {
+                        GUIJFrame gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+                    } catch(IOException ioException) {
+                        System.out.println("Error: IO Exception");
+                    }
                     editCount++;
                 } else {
                     System.out.println("Error: please confirm changes on the board first");
@@ -127,8 +149,12 @@ public class UserInterface {
                     } catch(Exception e) {
                         System.out.println("File path not found");
                     }
-                    System.out.println("Changed Image:");
-                    System.out.println(graph);
+                    System.out.println("Now showing you the changed image...");
+                    try {
+                        GUIJFrame gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+                    } catch(IOException ioException) {
+                        System.out.println("Error: IO Exception");
+                    }
                     editCount++;
                 } else {
                     System.out.println("Error: please confirm changes on the board first");
@@ -141,22 +167,7 @@ public class UserInterface {
                 System.out.println("Changing files...");
                 break;
             case "d":
-                if(highlightedBoard) {
-                    System.out.println("Removing highlighted portion...");
-                    graph.delete(highlighted);
-                    graph.setEnergyGrid();
-
-                    try {
-                        graph.saveImg(f);
-                    } catch(Exception e) {
-                        System.out.println("File path not found");
-                    }
-
-                    highlightedBoard = false;
-                    editCount++;
-                    System.out.println("New image:");
-                    System.out.println(graph);
-                } else {
+                if(!highlightedBoard) {
                     System.out.println("Please make an edit first");
                 }
                 break;
@@ -179,8 +190,12 @@ public class UserInterface {
                         System.out.println("File path not found");
                     }
                     editCount++;
-                    System.out.println("New image:");
-                    System.out.println(graph);
+                    System.out.println("Showing you the new image...");
+                    try {
+                        GUIJFrame gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+                    } catch(IOException ioException) {
+                        System.out.println("Error: IO Exception");
+                    }
                 }
                 break;
             case "q":
@@ -204,6 +219,41 @@ public class UserInterface {
 
         }
     }
+
+    public static void confHighlight(String conf) {
+        //new file with path for outputting a temp image
+        File f = new File(
+                "src/main/resources/tempImg" +
+                        imgLoadCount+ "_0" +
+                        editCount + ".png");
+        if(conf.equals("d")) {
+            System.out.println("Removing highlighted portion...");
+            graph.delete(highlighted);
+            graph.setEnergyGrid();
+        } else {
+            System.out.println("Cancelling operation...");
+            graph.returnColor(highlighted);
+            graph.setEnergyGrid();
+        }
+
+        try {
+            graph.saveImg(new File(
+                    "src/resources/tempImg" + imgLoadCount+ "_0" + editCount + ".png"));
+        } catch(Exception e) {
+            System.out.println("File path not found");
+        }
+
+        highlightedBoard = false;
+        editCount++;
+        System.out.println("Displaying new image...");
+        try {
+            GUIJFrame gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+        } catch(IOException ioException) {
+            System.out.println("Error: IO Exception");
+        }
+    }
+
+
 
     public static void main(String[] args) throws IOException {
 
@@ -236,6 +286,11 @@ public class UserInterface {
             // display options to the user
             printMenu();
 
+            if(highlightedBoard) {
+                System.out.println(ANSI_CYAN + "There is currently a highlighted portion on the board. " +
+                        "Enter d to delete" + System.lineSeparator() + "or any other key to cancel" + ANSI_RESET);
+            }
+
             // try and get user input, if input is ever invalid this will set choice to quit
             try {
                 choice = scan.nextLine();
@@ -244,22 +299,25 @@ public class UserInterface {
                 choice = "q";
             }
 
-            //outputs a response to the user input
-            reactResponse(choice);
+            if(highlightedBoard) {
+                confHighlight(choice);
+            } else {
+                //outputs a response to the user input
+                reactResponse(choice);
 
-            //loop case to load a new file
-            if(choice.equals("f")) {
-                fileSwitch = false;
-                while(!fileSwitch) {
-                    System.out.println("Please enter the name of a png within src/resources:");
-                    try {
-                        fileSwitch = fileCheck(scan.nextLine());
-                        imgLoadCount++;
-                    } catch (IOException e) {
-                        System.out.println("No input found");
+                //loop case to load a new file
+                if(choice.equals("f")) {
+                    fileSwitch = false;
+                    while(!fileSwitch) {
+                        System.out.println("Please enter the name of a png within src/resources:");
+                        try {
+                            fileSwitch = fileCheck(scan.nextLine());
+                            imgLoadCount++;
+                        } catch (IOException e) {
+                            System.out.println("No input found");
+                        }
                     }
                 }
-            }
 
 //            //loop case for a confirmation to undo or delete bluest/random
 //            else if(choice.equals("r") || choice.equals("b") ||
@@ -280,9 +338,10 @@ public class UserInterface {
 //                confMade = false;
 //            }
 
-            // if choice is quit, exit the while-loop
-            else if(choice.equals("q")) {
-                shouldQuit = true;
+                // if choice is quit, exit the while-loop
+                else if(choice.equals("q")) {
+                    shouldQuit = true;
+                }
             }
         }
         scan.close();

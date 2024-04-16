@@ -1,8 +1,10 @@
 package uk.ac.nulondon;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -16,10 +18,22 @@ import java.util.Map;
  * Representation is a list of nodes that are linked with left and right neighbor
  */
 public class Graph {
+    //the current form of implementation for image representation
     private Node[] pixGraph;
+
+    //for image saving/projection through ImageIO and JFrames
     private BufferedImage image;
+
+    //for looping purposes/keeping track of the image size
     private int rows;
     private int cols;
+
+    //color println features
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
 
     /**
      * Constructor for the graph.
@@ -435,6 +449,15 @@ public class Graph {
         }
     }
 
+    public ImageIcon imgToByteArr() throws IOException {
+        BufferedImage imgCopy = new BufferedImage(400, 400, image.getType());;
+
+        Graphics2D g = imgCopy.createGraphics();
+        g.drawImage(image, 0, 0, 400, 400, null);
+
+        return new ImageIcon(imgCopy);
+    }
+
     /**
      * Override method of toString to represent the graph function for testing
      * & visualization
@@ -500,19 +523,19 @@ public class Graph {
     public void saveImg(File f) throws IllegalAccessException {
         try{
             ImageIO.write(image, "png", f);
-            System.out.println(f + " has been successfully saved!");
+            System.out.println(ANSI_CYAN + f + " has been successfully saved!" + ANSI_RESET);
         } catch (Exception e) {
             throw new IllegalAccessException("Path doesn't exist");
         }
     }
 
-    public static void main(String args[]) throws Exception {
-        File f = new File("src/resources/beach.png");
-        Graph graph = new Graph(ImageIO.read(f));
-
-        graph.setEnergyGrid();
-        graph.blueFinder();
-
-        System.out.println(graph.toStringEnergy());
-    }
+//    public static void main(String args[]) throws Exception {
+//        File f = new File("src/resources/beach.png");
+//        Graph graph = new Graph(ImageIO.read(f));
+//
+//        graph.setEnergyGrid();
+//        Node[] bluest = graph.blueFinder();
+//        graph.highlightNodes(bluest, Color.blue);
+//
+//    }
 }
