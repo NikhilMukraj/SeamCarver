@@ -34,6 +34,7 @@ public class UserInterface {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
 
+    //gui representation holder
     public static GUIJFrame gui;
 
     /**
@@ -222,7 +223,13 @@ public class UserInterface {
         }
     }
 
-    public static void confHighlight(String conf) {
+    /**
+     * Separate helper class to account for when a highlight is on the board.
+     * if d is pressed, this will delete the highlight. if any other key is pressed,
+     * it will cancel the operation
+     * @param conf represents the confirmation "d" or any other key pressed
+     */
+    private static void confHighlight(String conf) {
         //new file with path for outputting a temp image
         File f = new File(
                 "src/main/resources/tempImg" +
@@ -320,12 +327,12 @@ public class UserInterface {
                         }
                     }
                 }
-            }
-            // if choice is quit, exit the while-loop
-            if(choice.equals("q")) {
-                shouldQuit = true;
-                System.out.println("ensure that all display windows are closed...");
-                gui.kill();
+                // if choice is quit, exit the while-loop
+                else if(choice.equals("q")) {
+                    shouldQuit = true;
+                    System.out.println("ensure that all display windows are closed...");
+                    gui.kill();
+                }
             }
         }
         scan.close();
