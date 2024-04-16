@@ -2,6 +2,7 @@ package uk.ac.nulondon;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.io.ByteArrayOutputStream;
 
 /**
@@ -10,25 +11,43 @@ import java.io.ByteArrayOutputStream;
  */
 public class GUIJFrame {
     JFrame frame;
+    JLabel label;
 
     /**
      * Basic constructor
      */
-    public GUIJFrame(String title, ImageIcon img) {
-        initialize(title, img);
+    public GUIJFrame(String title) {
+        initialize(title);
     }
 
     /**
      * Privated helper function to help initialize the GUIJFrame class
      * @param title the name of the displayed image
-     * @param img the image being displayed
      */
-    private void initialize(String title, ImageIcon img) {
+    private void initialize(String title) {
         frame = new JFrame(title);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.add(new JLabel(img));
-        frame.pack();
+        frame.setSize(400, 400);
         frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
+        frame.setVisible(false);
+    }
+
+    public void setUpDisp(ImageIcon img) {
+        label = new JLabel(img);
+        frame.add(label);
+    }
+    public void updateDisp(ImageIcon img) {
+        frame.remove(label);
+
+        label = new JLabel(img);
+        frame.add(label);
+
+        frame.invalidate();
+        frame.revalidate();
+        frame.repaint();
+
+        frame.pack();
         frame.setVisible(true);
     }
 

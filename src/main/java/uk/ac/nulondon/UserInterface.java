@@ -1,11 +1,10 @@
 package uk.ac.nulondon;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.Stack;
@@ -19,7 +18,7 @@ public class UserInterface {
     //used for image representation
     private static Graph graph;
     //used to keep track of edits
-    private static Stack<Node[]> edits = new Stack<>();
+    private static final Stack<Node[]> edits = new Stack<>();
     //for tempImg, edit tracking
     private static int editCount = 0;
     private static int imgLoadCount = 0;
@@ -31,11 +30,10 @@ public class UserInterface {
     public static final String ANSI_NO_COLOR = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
 
     //gui representation holder
-    public static GUIJFrame gui;
+    public static GUIJFrame gui = new GUIJFrame("ImageDisplay");
 
     /**
      * Checks if the filePath provided by the user exists
@@ -50,12 +48,12 @@ public class UserInterface {
                 System.out.println("Image from " + filename + " was loaded!");
                 return true;
             } else {
-                System.out.println("File does not exist! Please try again.");
+                System.out.println(ANSI_RED + "File does not exist! Please try again." + ANSI_NO_COLOR);
                 return false;
             }
         }
         catch(IOException e) {
-            throw new IOException("Error: File not found");
+            throw new IOException(ANSI_RED + "Error: File not found" + ANSI_NO_COLOR);
         }
     }
 
@@ -94,9 +92,9 @@ public class UserInterface {
             case "v":
                 System.out.println("Viewing current image...");
                 try {
-                    gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+                    gui.updateDisp(graph.imgToByteArr());
                 } catch(IOException ioException) {
-                    System.out.println("Error: IO Exception");
+                    System.out.println(ANSI_RED + "Error: IO Exception" + ANSI_NO_COLOR);
                 }
             break;
             case "b":
@@ -106,7 +104,7 @@ public class UserInterface {
                 altered image
                 */
                 if(!highlightedBoard) {
-                    System.out.println("Removing the bluest seam...");
+                    System.out.println(ANSI_BLUE + "Highlighting the bluest seam..." + ANSI_NO_COLOR);
                     try {
                         highlighted = graph.blueFinder();
                         edits.push(highlighted);
@@ -120,47 +118,47 @@ public class UserInterface {
                     } catch(Exception e) {
                         System.out.println("File path not found");
                     }
-                    System.out.println("Now showing you the changed image...");
+                    System.out.println("Showing the changed image...");
                     try {
-                        gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+                        gui.updateDisp(graph.imgToByteArr());
                     } catch(IOException ioException) {
-                        System.out.println("Error: IO Exception");
+                        System.out.println(ANSI_RED + "Error: IO Exception" + ANSI_NO_COLOR);
                     }
                     editCount++;
                 } else {
-                    System.out.println("Error: please confirm changes on the board first");
+                    System.out.println(ANSI_RED + "Error: please confirm changes on the board first" + ANSI_NO_COLOR);
                 }
                 break;
             case "e":
                 /*
-                will use the seamfinder function from graph.java
+                will use the seamFinder function from graph.java
                 and attempts to save it as an image, printing out
                 the altered image
                 */
                 if(!highlightedBoard) {
-                    System.out.println("Removing seam with lowest energy...");
+                    System.out.println(ANSI_BLUE + "Highlighting seam with lowest energy..." + ANSI_NO_COLOR);
                     try {
                         highlighted = graph.seamFinder();
                         edits.push(highlighted);
                         graph.highlightNodes(highlighted, Color.red);
                         highlightedBoard = true;
                     } catch (Exception e) {
-                        System.out.println("Error: Energy values not assigned.");
+                        System.out.println(ANSI_RED + "Error: Energy values not assigned." + ANSI_NO_COLOR);
                     }
                     try {
                         graph.saveImg(f);
                     } catch(Exception e) {
-                        System.out.println("File path not found");
+                        System.out.println(ANSI_RED + "Error: File path not found" + ANSI_NO_COLOR);
                     }
                     System.out.println("Now showing you the changed image...");
                     try {
-                        gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+                        gui.updateDisp(graph.imgToByteArr());
                     } catch(IOException ioException) {
-                        System.out.println("Error: IO Exception");
+                        System.out.println(ANSI_RED + "Error: IO Exception" + ANSI_NO_COLOR);
                     }
                     editCount++;
                 } else {
-                    System.out.println("Error: please confirm changes on the board first");
+                    System.out.println(ANSI_RED + "Error: please confirm changes on the board first" + ANSI_NO_COLOR);
                 }
                 break;
             case "f":
@@ -180,7 +178,7 @@ public class UserInterface {
                 the undoPossible switch is turned off
                 */
                 if(edits.empty()) {
-                    System.out.println("Error: No edits made. Please make an edit before you undo.");
+                    System.out.println(ANSI_RED + "Error: No edits made. Please make an edit before you undo." + ANSI_NO_COLOR);
                     break;
                 } else {
                     System.out.println("Undoing the last change.");
@@ -195,9 +193,9 @@ public class UserInterface {
                     editCount++;
                     System.out.println("Showing you the new image...");
                     try {
-                        gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+                        gui.updateDisp(graph.imgToByteArr());
                     } catch(IOException ioException) {
-                        System.out.println("Error: IO Exception");
+                        System.out.println(ANSI_RED + "Error: IO Exception" + ANSI_NO_COLOR);
                     }
                 }
                 break;
@@ -236,7 +234,7 @@ public class UserInterface {
                         imgLoadCount+ "_0" +
                         editCount + ".png");
         if(conf.equals("d")) {
-            System.out.println("Removing highlighted portion...");
+            System.out.println(ANSI_BLUE + "Removing highlighted portion..." + ANSI_NO_COLOR);
             graph.delete(highlighted);
             graph.setEnergyGrid();
         } else {
@@ -256,9 +254,9 @@ public class UserInterface {
         editCount++;
         System.out.println("Displaying new image...");
         try {
-            gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+            gui.updateDisp(graph.imgToByteArr());
         } catch(IOException ioException) {
-            System.out.println("Error: IO Exception");
+            System.out.println(ANSI_RED + "Error: IO Exception" + ANSI_NO_COLOR);
         }
     }
 
@@ -287,7 +285,9 @@ public class UserInterface {
             }
         }
 
-        String choice = "";
+        gui.setUpDisp(new ImageIcon(graph.imgToByteArr().getImage()));
+
+        String choice;
 
         // while shouldQuit is false, keep going
         while(!shouldQuit) {
@@ -330,7 +330,6 @@ public class UserInterface {
                 // if choice is quit, exit the while-loop
                 else if(choice.equals("q")) {
                     shouldQuit = true;
-                    System.out.println("ensure that all display windows are closed...");
                     gui.kill();
                 }
             }

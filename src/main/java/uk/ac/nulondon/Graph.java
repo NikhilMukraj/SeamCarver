@@ -444,7 +444,7 @@ public class Graph {
     }
 
     public void returnColor(Node[] nodes) {
-        for (int i = 0; i < nodes.length; i++) {
+        for(int i = 0; i < nodes.length; i++) {
             nodes[i].value = nodes[i].ogValue;
         }
     }
