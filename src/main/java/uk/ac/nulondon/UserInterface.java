@@ -1,6 +1,7 @@
 package uk.ac.nulondon;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,6 +27,8 @@ public class UserInterface {
     //for keeping track of whether a highlight is on the board or not
     private static Node[] highlighted = new Node[0];
     private static boolean highlightedBoard = false;
+
+    private static GUIJFrame gui;
 
     //color println features
     public static final String ANSI_NO_COLOR = "\u001B[0m";
@@ -91,7 +94,7 @@ public class UserInterface {
             case "v":
                 System.out.println("Viewing current image...");
                 try {
-                    GUIJFrame gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+                    gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
                 } catch(IOException ioException) {
                     System.out.println("Error: IO Exception");
                 }
@@ -119,7 +122,7 @@ public class UserInterface {
                     }
                     System.out.println("Now showing you the changed image...");
                     try {
-                        GUIJFrame gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+                        gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
                     } catch(IOException ioException) {
                         System.out.println("Error: IO Exception");
                     }
@@ -151,7 +154,7 @@ public class UserInterface {
                     }
                     System.out.println("Now showing you the changed image...");
                     try {
-                        GUIJFrame gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+                        gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
                     } catch(IOException ioException) {
                         System.out.println("Error: IO Exception");
                     }
@@ -192,7 +195,7 @@ public class UserInterface {
                     editCount++;
                     System.out.println("Showing you the new image...");
                     try {
-                        GUIJFrame gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+                        gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
                     } catch(IOException ioException) {
                         System.out.println("Error: IO Exception");
                     }
@@ -247,7 +250,7 @@ public class UserInterface {
         editCount++;
         System.out.println("Displaying new image...");
         try {
-            GUIJFrame gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
+            gui = new GUIJFrame(f.getName(), graph.imgToByteArr());
         } catch(IOException ioException) {
             System.out.println("Error: IO Exception");
         }
@@ -318,11 +321,11 @@ public class UserInterface {
                         }
                     }
                 }
-
-                // if choice is quit, exit the while-loop
-                else if(choice.equals("q")) {
-                    shouldQuit = true;
-                }
+            }
+            // if choice is quit, exit the while-loop
+            if(choice.equals("q")) {
+                shouldQuit = true;
+                gui.kill();
             }
         }
         scan.close();

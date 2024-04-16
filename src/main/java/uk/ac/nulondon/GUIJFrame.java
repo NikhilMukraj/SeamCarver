@@ -18,4 +18,9 @@ public class GUIJFrame {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
+
+    public void kill() {
+        frame.setVisible(false); //you can't see me!
+        frame.dispose(); //Destroy the JFrame object
+    }
 }
