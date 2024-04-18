@@ -90,10 +90,10 @@ public class GraphTest{
         Node[] seam1 = {testGraph1.getGraphIdx(3, 0),
                 testGraph1.getGraphIdx(2, 1),
                 testGraph1.getGraphIdx(1, 2),
-                testGraph1.getGraphIdx(1, 3),
+                testGraph1.getGraphIdx(0, 3),
                 testGraph1.getGraphIdx(0, 4),
                 testGraph1.getGraphIdx(0, 5),
-                testGraph1.getGraphIdx(1, 6),
+                testGraph1.getGraphIdx(0, 6),
                 testGraph1.getGraphIdx(0, 7)
         };
         Assertions.assertThat(seam1).isEqualTo(testGraph1.seamFinder());
@@ -126,14 +126,14 @@ public class GraphTest{
                 testGraph3.getGraphIdx(2, 4),
                 testGraph3.getGraphIdx(1, 5),
                 testGraph3.getGraphIdx(0, 6),
-                testGraph3.getGraphIdx(1, 7),
+                testGraph3.getGraphIdx(0, 7),
                 testGraph3.getGraphIdx(0, 8),
                 testGraph3.getGraphIdx(0, 9),
                 testGraph3.getGraphIdx(0, 10),
                 testGraph3.getGraphIdx(0, 11),
-                testGraph3.getGraphIdx(1, 12),
+                testGraph3.getGraphIdx(0, 12),
                 testGraph3.getGraphIdx(0, 13),
-                testGraph3.getGraphIdx(1, 14),
+                testGraph3.getGraphIdx(0, 14),
                 testGraph3.getGraphIdx(0, 15)
         };
         Assertions.assertThat(seam3).isEqualTo(testGraph3.seamFinder());
@@ -148,23 +148,23 @@ public class GraphTest{
         Node[] seam1 = {
                 testGraph1.getGraphIdx(2, 0),
                 testGraph1.getGraphIdx(1, 1),
-                testGraph1.getGraphIdx(1, 2),
-                testGraph1.getGraphIdx(1, 3),
-                testGraph1.getGraphIdx(1, 4),
-                testGraph1.getGraphIdx(1, 5),
-                testGraph1.getGraphIdx(1, 6),
+                testGraph1.getGraphIdx(0, 2),
+                testGraph1.getGraphIdx(0, 3),
+                testGraph1.getGraphIdx(0, 4),
+                testGraph1.getGraphIdx(0, 5),
+                testGraph1.getGraphIdx(0, 6),
                 testGraph1.getGraphIdx(0, 7)
         };
         Assertions.assertThat(seam1).isEqualTo(testGraph1.blueFinder());
 
         Node[] seam2 = {
-                testGraph2.getGraphIdx(1, 0),
+                testGraph2.getGraphIdx(0, 0),
                 testGraph2.getGraphIdx(0, 1),
                 testGraph2.getGraphIdx(0, 2),
                 testGraph2.getGraphIdx(0, 3),
-                testGraph2.getGraphIdx(1, 4),
-                testGraph2.getGraphIdx(1, 5),
-                testGraph2.getGraphIdx(1, 6),
+                testGraph2.getGraphIdx(0, 4),
+                testGraph2.getGraphIdx(0, 5),
+                testGraph2.getGraphIdx(0, 6),
                 testGraph2.getGraphIdx(0, 7),
                 testGraph2.getGraphIdx(0, 8),
                 testGraph2.getGraphIdx(0, 9),
@@ -172,7 +172,7 @@ public class GraphTest{
                 testGraph2.getGraphIdx(0, 11),
                 testGraph2.getGraphIdx(0, 12),
                 testGraph2.getGraphIdx(0, 13),
-                testGraph2.getGraphIdx(1, 14),
+                testGraph2.getGraphIdx(0, 14),
                 testGraph2.getGraphIdx(0, 15)
         };
         Assertions.assertThat(seam2).isEqualTo(testGraph2.blueFinder());
@@ -181,19 +181,19 @@ public class GraphTest{
                 testGraph3.getGraphIdx(8, 0),
                 testGraph3.getGraphIdx(8, 1),
                 testGraph3.getGraphIdx(7, 2),
-                testGraph3.getGraphIdx(7, 3),
+                testGraph3.getGraphIdx(6, 3),
                 testGraph3.getGraphIdx(7, 4),
                 testGraph3.getGraphIdx(8, 5),
                 testGraph3.getGraphIdx(7, 6),
                 testGraph3.getGraphIdx(7, 7),
                 testGraph3.getGraphIdx(7, 8),
                 testGraph3.getGraphIdx(6, 9),
-                testGraph3.getGraphIdx(6, 10),
+                testGraph3.getGraphIdx(5, 10),
                 testGraph3.getGraphIdx(6, 11),
                 testGraph3.getGraphIdx(6, 12),
                 testGraph3.getGraphIdx(6, 13),
                 testGraph3.getGraphIdx(5, 14),
-                testGraph3.getGraphIdx(5, 15)
+                testGraph3.getGraphIdx(4, 15)
         };
         Assertions.assertThat(seam3).isEqualTo(testGraph3.blueFinder());
     }

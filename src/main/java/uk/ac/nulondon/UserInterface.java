@@ -106,6 +106,7 @@ public class UserInterface {
                 if(!highlightedBoard) {
                     System.out.println(ANSI_BLUE + "Highlighting the bluest seam..." + ANSI_NO_COLOR);
                     try {
+
                         highlighted = graph.blueFinder();
                         edits.push(highlighted);
                         graph.highlightNodes(highlighted, Color.blue);

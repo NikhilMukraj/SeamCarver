@@ -198,6 +198,9 @@ public class Graph {
         Node smallestNode = n;
         n = n.right;
         for(int i = 1; i < cols; i++) {
+            while(n.skip) {
+                n = n.right;
+            }
             if (n.energy < smallestNode.energy) {
                 smallestNode = n;
             }
@@ -220,9 +223,15 @@ public class Graph {
      * @return an array of Nodes representing the seam
      */
     private Node[] findGreatestBlue(Node n) {
+        while(n.skip) {
+            n = n.right;
+        }
         Node greatest = n;
         n = n.right;
         for(int i = 1; i < cols; i++) {
+            while(n.skip) {
+                n = n.right;
+            }
             if (n.blueAcc > greatest.blueAcc) {
                 greatest = n;
             }
@@ -444,9 +453,10 @@ public class Graph {
     }
 
     public void returnColor(Node[] nodes) {
-        for(int i = 0; i < nodes.length; i++) {
-            nodes[i].value = nodes[i].ogValue;
+        for (Node node : nodes) {
+            node.value = node.ogValue;
         }
+        imgUpdate();
     }
 
     public ImageIcon imgToByteArr() throws IOException {
@@ -504,6 +514,9 @@ public class Graph {
             Node iter = pixGraph[i];
             for(int j = 0; j < cols; j++) {
                 if(iter != null) {
+                    while(iter.skip) {
+                        iter = iter.right;
+                    }
                     string.append(iter.energy);
                     if(j != cols - 1) {
                         string.append(" - ");

@@ -36,6 +36,7 @@ public class GUIJFrame {
     public void setUpDisp(ImageIcon img) {
         label = new JLabel(img);
         frame.add(label);
+        frame.setAlwaysOnTop(true);
     }
     public void updateDisp(ImageIcon img) {
         frame.remove(label);
